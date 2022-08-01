@@ -1,0 +1,11 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Cron\AclsFromFiles\Command\ExportCommand:
+    tags:
+      - name: 'console.command'
+        command: 'acls_from_files:export'
+        schedulable: true
