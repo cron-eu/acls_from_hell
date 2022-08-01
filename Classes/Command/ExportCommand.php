@@ -86,6 +86,12 @@ class ExportCommand extends Command
         $yamlConfiguration = [
             'non_exclude_fields' => GeneralUtility::trimExplode(',', $group['non_exclude_fields'], true),
             'explicit_allowdeny' => GeneralUtility::trimExplode(',', $group['explicit_allowdeny'], true),
+            'pagetypes_select'   => GeneralUtility::trimExplode(',', $group['pagetypes_select'], true),
+            'tables_select'      => GeneralUtility::trimExplode(',', $group['tables_select'], true),
+            'tables_modify'      => GeneralUtility::trimExplode(',', $group['tables_modify'], true),
+            'groupMods'          => GeneralUtility::trimExplode(',', $group['groupMods'], true),
+            'availableWidgets'   => GeneralUtility::trimExplode(',', $group['availableWidgets'], true),
+            'file_permissions'   => GeneralUtility::trimExplode(',', $group['file_permissions'], true),
         ];
 
         $yamlFileContents = Yaml::dump($yamlConfiguration, 99, 2);
@@ -104,6 +110,12 @@ class ExportCommand extends Command
                     $group['title'],
                     $yamlFileName
                 ));
+                $this->updateGroupRecord($groupUid, $yamlFileName);
+                $this->io->success(sprintf(
+                    'Linked group %d to file %s',
+                    $groupUid,
+                    $yamlFileName
+                ));
             } else {
                 $this->io->error(sprintf(
                     'Failure! Couldn\'t export ACLs of group %d ("%s") to %s',
@@ -118,7 +130,7 @@ class ExportCommand extends Command
 		return Command::SUCCESS;
 	}
 
-	protected function getGroupRecord($group)
+	protected function getGroupRecord($groupUid)
 	{
 		$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('be_groups');
 		$queryBuilder->getRestrictions()
@@ -128,10 +140,30 @@ class ExportCommand extends Command
 		$rows = $queryBuilder
 			->select('*')
 			->from('be_groups')
-			->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($group, \PDO::PARAM_INT)))
+			->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \PDO::PARAM_INT)))
 			->execute()
 			->fetch();
 
 		return $rows;
 	}
+
+    protected function updateGroupRecord($groupUid, $file)
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('be_groups');
+        $queryBuilder
+            ->update('be_groups')
+            ->where(
+               $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \PDO::PARAM_INT))
+            )
+            ->set('tx_aclsfromfiles_file', $file)
+            ->set('non_exclude_fields', null)
+            ->set('explicit_allowdeny', null)
+            ->set('pagetypes_select', null)
+            ->set('tables_select', null)
+            ->set('tables_modify', null)
+            ->set('groupMods', null)
+            ->set('availableWidgets', null)
+            ->set('file_permissions', null)
+            ->execute();
+    }
 }
