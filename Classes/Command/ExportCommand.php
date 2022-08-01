@@ -1,6 +1,7 @@
 <?php
 namespace Cron\AclsFromFiles\Command;
 
+use Cron\AclsFromFiles\Domain\Model\BeGroup;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Command\Command;
@@ -83,16 +84,11 @@ class ExportCommand extends Command
 
         $yamlFileName = preg_replace('/([^a-z0-9]+)/', '-', strtolower($group['title']));
         $yamlFileName = $configPath . DIRECTORY_SEPARATOR . $yamlFileName . '.yaml';
-        $yamlConfiguration = [
-            'non_exclude_fields' => GeneralUtility::trimExplode(',', $group['non_exclude_fields'], true),
-            'explicit_allowdeny' => GeneralUtility::trimExplode(',', $group['explicit_allowdeny'], true),
-            'pagetypes_select'   => GeneralUtility::trimExplode(',', $group['pagetypes_select'], true),
-            'tables_select'      => GeneralUtility::trimExplode(',', $group['tables_select'], true),
-            'tables_modify'      => GeneralUtility::trimExplode(',', $group['tables_modify'], true),
-            'groupMods'          => GeneralUtility::trimExplode(',', $group['groupMods'], true),
-            'availableWidgets'   => GeneralUtility::trimExplode(',', $group['availableWidgets'], true),
-            'file_permissions'   => GeneralUtility::trimExplode(',', $group['file_permissions'], true),
-        ];
+
+        $yamlConfiguration = [];
+        foreach (BeGroup::ALLOWED_FIELDS as $fieldName) {
+            $yamlConfiguration[$fieldName] = GeneralUtility::trimExplode(',', $group[$fieldName], true);
+        }
 
         $yamlFileContents = Yaml::dump($yamlConfiguration, 99, 2);
 
@@ -155,15 +151,12 @@ class ExportCommand extends Command
             ->where(
                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \PDO::PARAM_INT))
             )
-            ->set('tx_aclsfromfiles_file', $file)
-            ->set('non_exclude_fields', null)
-            ->set('explicit_allowdeny', null)
-            ->set('pagetypes_select', null)
-            ->set('tables_select', null)
-            ->set('tables_modify', null)
-            ->set('groupMods', null)
-            ->set('availableWidgets', null)
-            ->set('file_permissions', null)
-            ->execute();
+            ->set('tx_aclsfromfiles_file', $file);
+
+        foreach (BeGroup::ALLOWED_FIELDS as $fieldName) {
+            $queryBuilder->set($fieldName, null);
+        }
+
+        $queryBuilder->execute();
     }
 }

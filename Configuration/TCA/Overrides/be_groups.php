@@ -23,16 +23,6 @@ $GLOBALS['TCA']['be_groups']['columns'][$newField] = [
 );
 
 // Make other fields disappear when 'file' is set!
-foreach (
-    [
-        'non_exclude_fields',
-        'explicit_allowdeny',
-        'pagetypes_select',
-        'tables_select',
-        'tables_modify',
-        'groupMods',
-        'availableWidgets',
-        'file_permissions',
-    ] as $field) {
-    $GLOBALS['TCA']['be_groups']['columns'][$field]['displayCond'] = 'FIELD:' . $newField . ':REQ:false';
+foreach (\Cron\AclsFromFiles\Domain\Model\BeGroup::ALLOWED_FIELDS as $fieldName) {
+    $GLOBALS['TCA']['be_groups']['columns'][$fieldName]['displayCond'] = 'FIELD:' . $newField . ':REQ:false';
 }
