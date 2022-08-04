@@ -1,9 +1,8 @@
 <?php
+
 namespace Cron\AclsFromFiles\Command;
 
 use Cron\AclsFromFiles\Domain\Model\BeGroup;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,63 +10,61 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Yaml;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
-use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ExportCommand extends Command
 {
-	/**
-	 * @var SymfonyStyle
-	 */
-	protected $io = null;
+    /**
+     * @var SymfonyStyle
+     */
+    protected $io = null;
 
-	/**
-	 * @var []
-	 */
-	protected $conf = null;
+    /**
+     * @var []
+     */
+    protected $conf = null;
 
-	/**
-	 * Configure the command by defining the name
-	 */
-	protected function configure()
-	{
-		$this->setDescription('Exports on BE group into a yaml file');
+    /**
+     * Configure the command by defining the name
+     */
+    protected function configure()
+    {
+        $this->setDescription('Exports on BE group into a yaml file');
 
-		$this->addArgument(
-			'group',
-			InputArgument::REQUIRED, // OPTIONAL, REQUIRED, IS_ARRAY
-			'Id of BE group to be exported'
-		);
+        $this->addArgument(
+            'group',
+            InputArgument::REQUIRED, // OPTIONAL, REQUIRED, IS_ARRAY
+            'Id of BE group to be exported'
+        );
 
-		$this->addOption(
-			'dry-run',
-			'd',
-			InputOption::VALUE_NONE,
-			'Dry-Run?'
-		);
-	}
+        $this->addOption(
+            'dry-run',
+            'd',
+            InputOption::VALUE_NONE,
+            'Dry-Run?'
+        );
+    }
 
-	/**
-	 * Executes the command
-	 *
-	 * @param InputInterface $input
-	 * @param OutputInterface $output
-	 */
-	protected function execute(InputInterface $input, OutputInterface $output)
-	{
-		// For more styles/helpers see: https://symfony.com/doc/current/console/style.html
-		$this->io = new SymfonyStyle($input, $output);
+    /**
+     * Executes the command
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        // For more styles/helpers see: https://symfony.com/doc/current/console/style.html
+        $this->io = new SymfonyStyle($input, $output);
 
-		if ($output->isVerbose()) {
-			$this->io->title($this->getDescription());
-		}
+        if ($output->isVerbose()) {
+            $this->io->title($this->getDescription());
+        }
 
 
         $this->dryRun = (bool)$input->getOption('dry-run');
-		$groupUid = (int)$input->getArgument('group');
+        $groupUid = (int)$input->getArgument('group');
 
         $group = $this->getGroupRecord($groupUid);
 
@@ -76,7 +73,7 @@ class ExportCommand extends Command
             return Command::FAILURE;
         }
 
-        $configPath = Environment::getConfigPath() . DIRECTORY_SEPARATOR . 'acls';
+        $configPath = BeGroup::getConfigPath();
 
         if (!is_dir($configPath)) {
             GeneralUtility::mkdir($configPath);
@@ -100,6 +97,7 @@ class ExportCommand extends Command
             $this->io->warning('Skipped exporting due to dry-run mode!');
         } else {
             if (GeneralUtility::writeFile($yamlFileName, $yamlFileContents)) {
+                $yamlFileName = basename($yamlFileName);
                 $this->io->success(sprintf(
                     'Successfully exported ACLs of group %d ("%s") to %s',
                     $groupUid,
@@ -119,29 +117,29 @@ class ExportCommand extends Command
                     $group['title'],
                     $yamlFileName
                 ));
-    			return Command::FAILURE;
+                return Command::FAILURE;
             }
         }
 
-		return Command::SUCCESS;
-	}
+        return Command::SUCCESS;
+    }
 
-	protected function getGroupRecord($groupUid)
-	{
-		$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('be_groups');
-		$queryBuilder->getRestrictions()
-			->removeAll()
-			->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+    protected function getGroupRecord($groupUid)
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('be_groups');
+        $queryBuilder->getRestrictions()
+            ->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
 
-		$rows = $queryBuilder
-			->select('*')
-			->from('be_groups')
-			->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \PDO::PARAM_INT)))
-			->execute()
-			->fetch();
+        $rows = $queryBuilder
+            ->select('*')
+            ->from('be_groups')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \PDO::PARAM_INT)))
+            ->execute()
+            ->fetch();
 
-		return $rows;
-	}
+        return $rows;
+    }
 
     protected function updateGroupRecord($groupUid, $file)
     {
@@ -149,7 +147,7 @@ class ExportCommand extends Command
         $queryBuilder
             ->update('be_groups')
             ->where(
-               $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \PDO::PARAM_INT))
+                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \PDO::PARAM_INT))
             )
             ->set('tx_aclsfromfiles_file', $file);
 

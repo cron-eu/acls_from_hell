@@ -27,8 +27,10 @@ class BackendUserAuthentication
         foreach ($caller->userGroups as $group) {
             // In case they've got an external file
             if ($group['tx_aclsfromfiles_file']) {
+                $filepath = BeGroup::getConfigPath() . DIRECTORY_SEPARATOR . basename($group['tx_aclsfromfiles_file']);
+
                 // Load that file
-                if ($groupAcl = $yamlLoader->load($group['tx_aclsfromfiles_file'])) {
+                if ($groupAcl = $yamlLoader->load($filepath)) {
                     // Iterate over its config
                     foreach ($groupAcl as $fieldName => $fieldConfig) {
                         // Check if fieldName is on list of fields that are allowed to be extended

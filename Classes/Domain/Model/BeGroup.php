@@ -2,6 +2,8 @@
 
 namespace Cron\AclsFromFiles\Domain\Model;
 
+use TYPO3\CMS\Core\Core\Environment;
+
 class BeGroup
 {
     public const ALLOWED_FIELDS = [
@@ -14,4 +16,9 @@ class BeGroup
         'availableWidgets',
         'file_permissions',
     ];
+
+    public static function getConfigPath()
+    {
+        return Environment::getConfigPath() . DIRECTORY_SEPARATOR . 'acls';
+    }
 }
