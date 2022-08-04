@@ -36,7 +36,17 @@ class BackendUserAuthentication
                         // Check if fieldName is on list of fields that are allowed to be extended
                         if (in_array($fieldName, BeGroup::ALLOWED_FIELDS)) {
                             // Add config to pre-built field config
-                            $caller->dataLists[$fieldName] .= ',' . join(',', $fieldConfig);
+                            switch ($fieldName) {
+                                case 'groupMods':
+                                    $caller->dataLists['modList'] .= ',' . join(',', $fieldConfig);
+                                    break;
+                                case 'availableWidgets':
+                                    $caller->dataLists['available_widgets'] .= ',' . join(',', $fieldConfig);
+                                    break;
+                                default:
+                                    $caller->dataLists[$fieldName] .= ',' . join(',', $fieldConfig);
+                                    break;
+                            }
                         }
                     }
                 }
