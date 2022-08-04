@@ -19,7 +19,7 @@ class BackendUserAuthentication
      * @param  \TYPO3\CMS\Core\Authentication\BackendUserAuthentication $caller
      * @return void
      */
-    public function overrideAcls($params, $caller)
+    public function loadAclsFromFiles($params, $caller)
     {
         $yamlLoader = GeneralUtility::makeInstance(YamlFileLoader::class);
 
