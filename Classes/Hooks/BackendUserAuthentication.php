@@ -1,8 +1,8 @@
 <?php
 
-namespace Cron\AclsFromFiles\Hooks;
+namespace Cron\AclsFromHell\Hooks;
 
-use Cron\AclsFromFiles\Domain\Model\BeGroup;
+use Cron\AclsFromHell\Domain\Model\BeGroup;
 use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -19,15 +19,15 @@ class BackendUserAuthentication
      * @param  \TYPO3\CMS\Core\Authentication\BackendUserAuthentication $caller
      * @return void
      */
-    public function loadAclsFromFiles($params, $caller)
+    public function loadAclsFromHell($params, $caller)
     {
         $yamlLoader = GeneralUtility::makeInstance(YamlFileLoader::class);
 
         // Iterate over all groups that have been loaded
         foreach ($caller->userGroups as $group) {
             // In case they've got an external file
-            if ($group['tx_aclsfromfiles_file']) {
-                $filepath = BeGroup::getConfigPath() . DIRECTORY_SEPARATOR . basename($group['tx_aclsfromfiles_file']);
+            if ($group['tx_aclsfromhell_file']) {
+                $filepath = BeGroup::getConfigPath() . DIRECTORY_SEPARATOR . basename($group['tx_aclsfromhell_file']);
 
                 // Load that file
                 if ($groupAcl = $yamlLoader->load($filepath)) {

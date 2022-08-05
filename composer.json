@@ -1,5 +1,5 @@
 {
-  "name": "cron-eu/acls-from-files",
+  "name": "cron-eu/acls-from-hell",
   "description": "ACLs from files",
   "license": "MIT",
   "type": "typo3-cms-extension",
@@ -8,12 +8,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Cron\\AclsFromFiles\\": "Classes/"
+      "Cron\\AclsFromHell\\": "Classes/"
     }
   },
   "extra": {
     "typo3/cms": {
-      "extension-key": "acls_from_files"
+      "extension-key": "acls_from_hell"
     }
   }
 }

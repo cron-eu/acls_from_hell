@@ -1,8 +1,8 @@
 <?php
 
-namespace Cron\AclsFromFiles\Command;
+namespace Cron\AclsFromHell\Command;
 
-use Cron\AclsFromFiles\Domain\Model\BeGroup;
+use Cron\AclsFromHell\Domain\Model\BeGroup;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -149,7 +149,7 @@ class ExportCommand extends Command
             ->where(
                 $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \PDO::PARAM_INT))
             )
-            ->set('tx_aclsfromfiles_file', $file);
+            ->set('tx_aclsfromhell_file', $file);
 
         foreach (BeGroup::ALLOWED_FIELDS as $fieldName) {
             $queryBuilder->set($fieldName, null);

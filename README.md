@@ -24,7 +24,7 @@ So be sure to clear the values of the above mentioned fields when selecting an e
 This might help:
 
 ```sql
-UPDATE be_groups SET non_exclude_fields=NULL,explicit_allowdeny=NULL,pagetypes_select=NULL,tables_select=NULL,tables_modify=NULL,groupMods=NULL,availableWidgets=NULL,file_permissions=NULL WHERE tx_aclsfromfiles_file <> '';
+UPDATE be_groups SET non_exclude_fields=NULL,explicit_allowdeny=NULL,pagetypes_select=NULL,tables_select=NULL,tables_modify=NULL,groupMods=NULL,availableWidgets=NULL,file_permissions=NULL WHERE tx_aclsfromhell_file <> '';
 ```
 
 ## Export existing ACLs
@@ -32,11 +32,11 @@ UPDATE be_groups SET non_exclude_fields=NULL,explicit_allowdeny=NULL,pagetypes_s
 To export the ACLs of an existing group to a yaml file call this:
 
 ```
-bin/typo3 acls_from_files:export <group> [--dry-run] [--verbose]
+bin/typo3 acls_from_hell:export <group> [--dry-run] [--verbose]
 ```
 
 This command:
 
 * creates a new yaml file within the `config/acls/` folder containing the ACL fields of the given group
-* sets `tx_aclsfromfiles_file` to that new file
+* sets `tx_aclsfromhell_file` to that new file
 * empties the values of the above mentioned fields

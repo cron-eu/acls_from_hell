@@ -4,8 +4,8 @@ services:
     autoconfigure: true
     public: false
 
-  Cron\AclsFromFiles\Command\ExportCommand:
+  Cron\AclsFromHell\Command\ExportCommand:
     tags:
       - name: 'console.command'
-        command: 'acls_from_files:export'
+        command: 'acls_from_hell:export'
         schedulable: true

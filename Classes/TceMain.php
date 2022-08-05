@@ -1,8 +1,8 @@
 <?php
 
-namespace Cron\AclsFromFiles;
+namespace Cron\AclsFromHell;
 
-use Cron\AclsFromFiles\Domain\Model\BeGroup;
+use Cron\AclsFromHell\Domain\Model\BeGroup;
 
 class TceMain
 {

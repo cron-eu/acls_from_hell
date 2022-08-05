@@ -2,7 +2,7 @@
 
 defined('TYPO3') || die('Access denied.');
 
-$newField = 'tx_aclsfromfiles_file';
+$newField = 'tx_aclsfromhell_file';
 
 // Add new field 'file'
 $GLOBALS['TCA']['be_groups']['columns'][$newField] = [
@@ -11,7 +11,7 @@ $GLOBALS['TCA']['be_groups']['columns'][$newField] = [
     'config' => [
         'type' => 'select',
         'renderType' => 'selectSingle',
-        'itemsProcFunc' => Cron\AclsFromFiles\TceMain::class . '->renderFiles',
+        'itemsProcFunc' => Cron\AclsFromHell\TceMain::class . '->renderFiles',
     ],
 ];
 
@@ -23,6 +23,6 @@ $GLOBALS['TCA']['be_groups']['columns'][$newField] = [
 );
 
 // Make other fields disappear when 'file' is set!
-foreach (\Cron\AclsFromFiles\Domain\Model\BeGroup::ALLOWED_FIELDS as $fieldName) {
+foreach (\Cron\AclsFromHell\Domain\Model\BeGroup::ALLOWED_FIELDS as $fieldName) {
     $GLOBALS['TCA']['be_groups']['columns'][$fieldName]['displayCond'] = 'FIELD:' . $newField . ':REQ:false';
 }

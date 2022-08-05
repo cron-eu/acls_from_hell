@@ -1,6 +1,6 @@
 <?php
 
-namespace Cron\AclsFromFiles\Domain\Model;
+namespace Cron\AclsFromHell\Domain\Model;
 
 use TYPO3\CMS\Core\Core\Environment;
 
