@@ -1,12 +1,15 @@
 <?php
 
-namespace Cron\AclsFromHell\Hooks;
+declare(strict_types=1);
+
+namespace Cron\AclsFromHell\EventListener;
 
 use Cron\AclsFromHell\Domain\Model\BeGroup;
+use TYPO3\CMS\Core\Authentication\Event\AfterGroupsResolvedEvent;
 use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class BackendUserAuthentication
+class LoadAclsFromHell
 {
     /**
      * This function resolves file reference of be_groups to external yaml files
@@ -15,16 +18,17 @@ class BackendUserAuthentication
      * Keep in mind: this is not an override mechanism but an addition of
      * comma separated values!
      *
-     * @param  array $params
-     * @param  \TYPO3\CMS\Core\Authentication\BackendUserAuthentication $caller
+     * @param  AfterGroupsResolvedEvent $event
      * @return void
      */
-    public function loadAclsFromHell($params, $caller)
+    public function __invoke(AfterGroupsResolvedEvent $event): void
     {
         $yamlLoader = GeneralUtility::makeInstance(YamlFileLoader::class);
 
+        $groups = $event->getGroups();
+
         // Iterate over all groups that have been loaded
-        foreach ($caller->userGroups as $group) {
+        foreach ($groups as &$group) {
             // In case they've got an external file
             if ($group['tx_aclsfromhell_file']) {
                 $filepath = BeGroup::getConfigPath() . DIRECTORY_SEPARATOR . basename($group['tx_aclsfromhell_file']);
@@ -35,22 +39,13 @@ class BackendUserAuthentication
                     foreach ($groupAcl as $fieldName => $fieldConfig) {
                         // Check if fieldName is on list of fields that are allowed to be extended
                         if (in_array($fieldName, BeGroup::ALLOWED_FIELDS)) {
-                            // Add config to pre-built field config
-                            switch ($fieldName) {
-                                case 'groupMods':
-                                    $caller->dataLists['modList'] .= ',' . join(',', $fieldConfig);
-                                    break;
-                                case 'availableWidgets':
-                                    $caller->dataLists['available_widgets'] .= ',' . join(',', $fieldConfig);
-                                    break;
-                                default:
-                                    $caller->dataLists[$fieldName] .= ',' . join(',', $fieldConfig);
-                                    break;
-                            }
+                            $group[$fieldName] .= join(',', $fieldConfig);
                         }
                     }
                 }
             }
         }
+
+        $event->setGroups($groups);
     }
 }

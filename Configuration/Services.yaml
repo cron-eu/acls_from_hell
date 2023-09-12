@@ -9,3 +9,8 @@ services:
       - name: 'console.command'
         command: 'acls_from_hell:export'
         schedulable: true
+
+  Cron\AclsFromHell\EventListener\LoadAclsFromHell:
+    tags:
+      - name: event.listener
+        identifier: 'acls-from-hell/load-acls-from-hell'
