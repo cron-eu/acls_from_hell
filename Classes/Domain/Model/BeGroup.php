@@ -15,7 +15,15 @@ class BeGroup
         'groupMods',
         'availableWidgets',
         'file_permissions',
+        'mfa_providers', // TYPO3 11+
     ];
+
+    public static function getAllowedFields()
+    {
+        return array_filter(self::ALLOWED_FIELDS, function($fieldName) {
+            return $GLOBALS['TCA']['be_groups']['columns'][$fieldName] ?? false;
+        });
+    }
 
     public static function getConfigPath()
     {

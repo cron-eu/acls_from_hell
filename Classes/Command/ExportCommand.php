@@ -83,7 +83,7 @@ class ExportCommand extends Command
         $yamlFileName = $configPath . DIRECTORY_SEPARATOR . $yamlFileName . '.yaml';
 
         $yamlConfiguration = [];
-        foreach (BeGroup::ALLOWED_FIELDS as $fieldName) {
+        foreach (BeGroup::getAllowedFields() as $fieldName) {
             $yamlConfiguration[$fieldName] = GeneralUtility::trimExplode(',', $group[$fieldName], true);
         }
 
@@ -151,7 +151,7 @@ class ExportCommand extends Command
             )
             ->set('tx_aclsfromhell_file', $file);
 
-        foreach (BeGroup::ALLOWED_FIELDS as $fieldName) {
+        foreach (BeGroup::getAllowedFields() as $fieldName) {
             $queryBuilder->set($fieldName, null);
         }
 
