@@ -23,6 +23,11 @@ class LoadAclsFromHell
      */
     public function __invoke(AfterGroupsResolvedEvent $event): void
     {
+        if ($event->getSourceDatabaseTable() !== 'be_groups') {
+            // we are only interested in backend users
+            return;
+        }
+
         $yamlLoader = GeneralUtility::makeInstance(YamlFileLoader::class);
 
         $groups = $event->getGroups();
