@@ -27,6 +27,11 @@ class ExportCommand extends Command
     protected $conf = null;
 
     /**
+     * @var boolean
+     */
+    protected $dryRun = false;
+
+    /**
      * Configure the command by defining the name
      */
     protected function configure()
@@ -53,7 +58,7 @@ class ExportCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // For more styles/helpers see: https://symfony.com/doc/current/console/style.html
         $this->io = new SymfonyStyle($input, $output);
