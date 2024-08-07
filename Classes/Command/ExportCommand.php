@@ -27,6 +27,11 @@ class ExportCommand extends Command
     protected $conf = null;
 
     /**
+     * @var boolean
+     */
+    protected $dryRun = false;
+
+    /**
      * Configure the command by defining the name
      */
     protected function configure()
