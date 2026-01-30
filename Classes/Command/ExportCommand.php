@@ -89,7 +89,7 @@ class ExportCommand extends Command
 
         $yamlConfiguration = [];
         foreach (BeGroup::getAllowedFields() as $fieldName) {
-            $yamlConfiguration[$fieldName] = GeneralUtility::trimExplode(',', $group[$fieldName], true);
+            $yamlConfiguration[$fieldName] = GeneralUtility::trimExplode(',', $group[$fieldName] ?? '', true);
         }
 
         $yamlFileContents = Yaml::dump($yamlConfiguration, 99, 2);
@@ -139,9 +139,9 @@ class ExportCommand extends Command
         $rows = $queryBuilder
             ->select('*')
             ->from('be_groups')
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \PDO::PARAM_INT)))
-            ->execute()
-            ->fetch();
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \TYPO3\CMS\Core\Database\Connection::PARAM_INT)))
+            ->executeQuery()
+            ->fetchAssociative();
 
         return $rows;
     }
@@ -152,7 +152,7 @@ class ExportCommand extends Command
         $queryBuilder
             ->update('be_groups')
             ->where(
-                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \PDO::PARAM_INT))
+                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \TYPO3\CMS\Core\Database\Connection::PARAM_INT))
             )
             ->set('tx_aclsfromhell_file', $file);
 

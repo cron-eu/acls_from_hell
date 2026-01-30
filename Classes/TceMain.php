@@ -6,7 +6,7 @@ use Cron\AclsFromHell\Domain\Model\BeGroup;
 
 class TceMain
 {
-    public function renderFiles(array &$config)
+    public function renderFiles(array &$config): void
     {
         if (empty($config['items'])) {
             $config['items'][] = ['', null];
