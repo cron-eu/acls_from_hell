@@ -161,6 +161,6 @@ class ExportCommand extends Command
             $queryBuilder->set($fieldName, null);
         }
 
-        $queryBuilder->execute();
+        $queryBuilder->executeStatement();
     }
 }
