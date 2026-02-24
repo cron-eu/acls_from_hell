@@ -16,6 +16,7 @@ class BeGroup
         'availableWidgets',
         'file_permissions',
         'mfa_providers', // TYPO3 11+
+        'custom_options', // TYPO3 11+
     ];
 
     public static function getAllowedFields()
