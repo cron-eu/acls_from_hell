@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Yaml;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -89,7 +90,7 @@ class ExportCommand extends Command
 
         $yamlConfiguration = [];
         foreach (BeGroup::getAllowedFields() as $fieldName) {
-            $yamlConfiguration[$fieldName] = GeneralUtility::trimExplode(',', $group[$fieldName], true);
+            $yamlConfiguration[$fieldName] = GeneralUtility::trimExplode(',', $group[$fieldName] ?? '', true);
         }
 
         $yamlFileContents = Yaml::dump($yamlConfiguration, 99, 2);
@@ -139,9 +140,9 @@ class ExportCommand extends Command
         $rows = $queryBuilder
             ->select('*')
             ->from('be_groups')
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \PDO::PARAM_INT)))
-            ->execute()
-            ->fetch();
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, Connection::PARAM_INT)))
+            ->executeQuery()
+            ->fetchAssociative();
 
         return $rows;
     }
@@ -152,7 +153,7 @@ class ExportCommand extends Command
         $queryBuilder
             ->update('be_groups')
             ->where(
-                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, \PDO::PARAM_INT))
+                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($groupUid, Connection::PARAM_INT))
             )
             ->set('tx_aclsfromhell_file', $file);
 
@@ -160,6 +161,6 @@ class ExportCommand extends Command
             $queryBuilder->set($fieldName, null);
         }
 
-        $queryBuilder->execute();
+        $queryBuilder->executeStatement();
     }
 }
